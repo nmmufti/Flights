@@ -124,6 +124,54 @@ export class FlightService extends BaseService {
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `findFlight$Plain()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  findFlight$Plain$Response(params: {
+    id: string;
+  },
+  context?: HttpContext
+
+): Observable<StrictHttpResponse<FlightRm>> {
+
+    const rb = new RequestBuilder(this.rootUrl, FlightService.FindFlightPath, 'get');
+    if (params) {
+      rb.path('id', params.id, {});
+    }
+
+    return this.http.request(rb.build({
+      responseType: 'text',
+      accept: 'text/plain',
+      context: context
+    })).pipe(
+      filter((r: any) => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return r as StrictHttpResponse<FlightRm>;
+      })
+    );
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `findFlight$Plain$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  findFlight$Plain(params: {
+    id: string;
+  },
+  context?: HttpContext
+
+): Observable<FlightRm> {
+
+    return this.findFlight$Plain$Response(params,context).pipe(
+      map((r: StrictHttpResponse<FlightRm>) => r.body as FlightRm)
+    );
+  }
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `findFlight()` instead.
    *
    * This method doesn't expect any request body.
@@ -133,7 +181,7 @@ export class FlightService extends BaseService {
   },
   context?: HttpContext
 
-): Observable<StrictHttpResponse<void>> {
+): Observable<StrictHttpResponse<FlightRm>> {
 
     const rb = new RequestBuilder(this.rootUrl, FlightService.FindFlightPath, 'get');
     if (params) {
@@ -141,13 +189,13 @@ export class FlightService extends BaseService {
     }
 
     return this.http.request(rb.build({
-      responseType: 'text',
-      accept: '*/*',
+      responseType: 'json',
+      accept: 'text/json',
       context: context
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) => {
-        return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+        return r as StrictHttpResponse<FlightRm>;
       })
     );
   }
@@ -163,10 +211,10 @@ export class FlightService extends BaseService {
   },
   context?: HttpContext
 
-): Observable<void> {
+): Observable<FlightRm> {
 
     return this.findFlight$Response(params,context).pipe(
-      map((r: StrictHttpResponse<void>) => r.body as void)
+      map((r: StrictHttpResponse<FlightRm>) => r.body as FlightRm)
     );
   }
 
