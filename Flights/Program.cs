@@ -11,6 +11,8 @@ builder.Services.AddSwaggerGen(c =>
         Description = "Development Server",
         Url = "https://localhost:7173"
     });
+
+    c.CustomOperationIds(e => $"{e.ActionDescriptor.RouteValues["action"] + e.ActionDescriptor.RouteValues["controller"]}");
 });
 
 var app = builder.Build();

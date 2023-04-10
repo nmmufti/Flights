@@ -6,21 +6,17 @@ namespace Flights.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    //These will be added to all actions in this controller
+    [ProducesResponseType(StatusCodes.Status400BadRequest)] 
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class FlightController : ControllerBase
     {
         private readonly ILogger<FlightController> _logger;
 
-        public FlightController(ILogger<FlightController> logger)
+        static Random random = new Random();
+
+        static private FlightRm[] flights = new FlightRm[]
         {
-            _logger = logger;
-        }
-
-        Random random = new Random();
-
-        [HttpGet]
-        public IEnumerable<FlightRm> Search()
-            => new FlightRm[]
-            {
               new (   Guid.NewGuid(),
                     "American Airlines",
                     random.Next(90, 5000).ToString(),
@@ -69,6 +65,34 @@ namespace Flights.Controllers
                         new TimePlaceRm("Le Bourget",DateTime.Now.AddHours(random.Next(1, 58))),
                         new TimePlaceRm("Zagreb",DateTime.Now.AddHours(random.Next(4, 60))),
                             random.Next(1, 853))
-            };
+
+        };
+
+        public FlightController(ILogger<FlightController> logger)
+        {
+            _logger = logger;
+        }
+
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(IEnumerable<FlightRm>), 200)]
+        [HttpGet]
+        public IEnumerable<FlightRm> Search()
+            => flights;
+
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpGet("{id}")]
+        public ActionResult<FlightRm> Find(Guid id)
+        { 
+            var flight = flights.SingleOrDefault(f => f.Id == id);
+
+            if (flight == null)
+                return NotFound();
+
+            return Ok(flight);
+
+        }
     }
 }

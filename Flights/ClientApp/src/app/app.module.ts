@@ -7,12 +7,14 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { SearchFlightsComponent } from './search-flights/search-flights.component';
+import { BookFlighComponent } from './book-fligh/book-fligh.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavMenuComponent,
-    SearchFlightsComponent
+    SearchFlightsComponent,
+    BookFlighComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -20,6 +22,8 @@ import { SearchFlightsComponent } from './search-flights/search-flights.componen
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: SearchFlightsComponent, pathMatch: 'full' },
+      { path: 'search-flights', component: SearchFlightsComponent },
+      { path: 'book-flight/:flightId', component: BookFlighComponent },
     ])
   ],
   providers: [],
